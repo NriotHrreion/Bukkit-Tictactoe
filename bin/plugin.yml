@@ -1,0 +1,8 @@
+name: TicTacToe
+main: net.nocpiun.plugin.tictactoe.TicTacToeMain
+version: 1
+author: NriotHrreion
+commands:
+  tictactoe:
+    description: "Play TicTacToe game"
+    usage: "/<command>"
