@@ -6,3 +6,9 @@ commands:
   tictactoe:
     description: "Play TicTacToe game"
     usage: "/<command>"
+  multitictactoe:
+    description: "Play MultiTicTacToe game"
+    usage: "/<command> <player_name>"
+  ticconfirm:
+    description: "Confirm game"
+    usage: "/<command>"

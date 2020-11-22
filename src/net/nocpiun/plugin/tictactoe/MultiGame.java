@@ -11,7 +11,7 @@ import org.bukkit.inventory.*;
 import org.bukkit.event.*;
 import org.bukkit.event.inventory.*;
 
-public class Game implements Listener {
+public class MultiGame implements CommandExecutor, Listener {
 	private Utils util = new Utils();
 	
 	private static final Material black = Material.BLACK_WOOL;
@@ -22,22 +22,32 @@ public class Game implements Listener {
 	private int turn = 0;
 	private int map[] = new int[9];
 	private boolean isFinish = false;
+	private Player p1 = null;
+	private Player p2 = null;
 	
 	private Inventory gameWindow = null;
 	
 	public void initGame() {
-		//
+		Bukkit.getPluginCommand("ticconfirm").setExecutor(this);
 	}
 	
-	public void launch(CommandSender sender) {
-		Player player = util.getPlayer(sender);
+	public void launch(CommandSender sender, String playerName) {
+		Player player = sender.getServer().getPlayer(sender.getName());
+		Player againstPlayer = sender.getServer().getPlayer(playerName);
 		
-		map = new int[9];
-		turn = 0;
-		isFinish = false;
+		p1 = player;
+		p2 = againstPlayer;
 		
+		player.sendMessage("您已向 "+ playerName +" 发起了挑战");
+		againstPlayer.sendMessage(util.ColorParse(player.getName() +" 向你发起了&l井字棋挑战"));
+		againstPlayer.sendMessage("输入 /ticconfirm 以接受挑战!");
+	}
+	
+	private void gameBegin() {
 		initGameWindow();
-		player.openInventory(gameWindow);
+		
+		p1.openInventory(gameWindow);
+		p2.openInventory(gameWindow);
 	}
 	
 	private void gameFinish() {
@@ -89,7 +99,6 @@ public class Game implements Listener {
 		util.InventoryAddItem(gameWindow, Piece.BLACK, slot);
 		
 		isFinish = util.isWin(map, gameWindow);
-		System.out.println(isFinish);
 		if(isFinish) {
 			gameFinish();
 		}
@@ -101,10 +110,19 @@ public class Game implements Listener {
 		util.InventoryAddItem(gameWindow, Piece.WHITE, slot);
 		
 		isFinish = util.isWin(map, gameWindow);
-		System.out.println(isFinish);
 		if(isFinish) {
 			gameFinish();
 		}
+	}
+	
+	@Override
+	public boolean onCommand(CommandSender sender, Command cmd, String label, String args[]) {
+		if(p1 != null && p2 != null && sender.getServer().getPlayer(sender.getName()) != p1) {
+			sender.sendMessage("您已接受挑战");
+			gameBegin();
+		}
+		
+		return true;
 	}
 	
 	@EventHandler
@@ -117,11 +135,15 @@ public class Game implements Listener {
 				switch(turn) {
 				case 0:
 					turn = 1;
-					blackClick(event.getSlot());
+					if(event.getWhoClicked().getName() == p1.getName()) {
+						blackClick(event.getSlot());
+					}
 					break;
 				case 1:
 					turn = 0;
-					whiteClick(event.getSlot());
+					if(event.getWhoClicked().getName() == p2.getName()) {
+						whiteClick(event.getSlot());
+					}
 					break;
 				}
 			} else if(item == Material.RED_STAINED_GLASS_PANE) {
