@@ -1,5 +1,7 @@
 # TicTacToe Game
 
+## `This Repo Has Been Archived`
+
 ## 安装
 
 下载后将jar文件放入服务器根目录下的plugins文件夹即可
